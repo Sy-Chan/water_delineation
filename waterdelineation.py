@@ -1,13 +1,30 @@
 import math
 import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
 ##if you want to output as image grid truly suggest you to study matplotlib
-##from esri website:"...one-cell sink Is Next To the physical edge Of the raster Or has at least one NoData cell As a neighbor, it Is Not filled due To insufficient neighbor information.
+##from esri website:"...one-cell sink Is Next To the physical edge Of the raster Or has at least one NoData cell As a neighbor,
+##it Is Not filled due To insufficient neighbor information.
+##With the Force all edge cells to flow outward parameter in the default unchecked setting (NORMAL in Python), a cell at the edge of the surface raster will flow
+##toward the inner cell with the steepest drop in z-value. If the drop is less than or equal to zero, the cell will flow out of the surface raster.
 ##for the streamline, you will have to key in a threshold value
 
 
-def D8(raster):
+def D8(raster,flow_inward=True):
+    highest = np.max(raster)
+    lowest = np.min(raster)
+    row1=[highest] * len(raster[0])
+    min1=np.where(raster==lowest)
+    row2=row1.copy()
+    row2[int(min1[1])]=lowest
+    arr = np.vstack((row1,raster,row2))
+    arr=np.insert(arr, [0], highest, axis=1)
+    raster=np.insert(arr, [len(raster[0])+1], highest, axis=1)
+    #assume all edge cell flow inward, except lowest point as outlets
+    #thus add 2 rows and columns with highest value surround the raster, except the one with lowest value
+    
     arr = []
-    row = []
+    row = []    
     for i in range(1,len(raster)-1):
         row = []
         for j in range(1,len(raster[i])-1):
@@ -109,7 +126,30 @@ def stream(flow, pt):
                     flow[i][j] = 1
                 else:
                     flow[i][j]=0
-        return flow 
+
+   
+    return flow
+
+#plot function is to visualize the value in grid with color
+def plot(arr,color='gray'):
+
+    fig, ax = plt.subplots()
+    #gray or gray_r
+    #cmap indicate the color of grid
+    #try refer https://matplotlib.org/2.0.2/examples/color/colormaps_reference.html for more information
+    im = ax.imshow(arr,cmap=color)
+    
+    # Loop over data dimensions and create text annotations.
+    for i in range(len(arr)):
+        for j in range(len(arr[i])):
+            text = ax.text(j, i, arr[i, j],
+                           ha="center", va="center", color="r")
+            #color here is the text color
+            # more info in:https://matplotlib.org/tutorials/colors/colors.html
+
+    ax.set_title(input("give a title to your plot: "))
+    fig.tight_layout()
+    plt.show()
     
 raster = np.array([
     [78,72,69,71,58,49],
@@ -119,12 +159,17 @@ raster = np.array([
     [68,61,47,21,16,19],
     [74,53,34,12,11,12]
     ])
+
+plot(raster)
 print('Raster =','\n',raster,'\n')
 arr = D8(raster)
+plot(arr,'gist_rainbow_r')
 print('Flow Direction =','\n',arr,'\n')
 flow=flow(arr)
+plot(flow)
 print('Flow Accumulation =','\n',flow,'\n')
 pt = PourPoint(flow)
 print('Pour Point =',pt,'\n')
 stream = stream(flow, pt)
-print('Streanline =','\n',stream)
+plot(stream)
+print('Streamline =','\n',stream)
