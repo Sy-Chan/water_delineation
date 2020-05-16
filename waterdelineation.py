@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 ##toward the inner cell with the steepest drop in z-value. If the drop is less than or equal to zero, the cell will flow out of the surface raster.
 ##for the streamline, you will have to key in a threshold value
 
-
+#D8 algorithm
 def D8(raster,flow_inward=True):
     highest = np.max(raster)
     lowest = np.min(raster)
@@ -81,7 +81,7 @@ def D8(raster,flow_inward=True):
         arr.append(row)
     arr = np.array(arr)
     return arr
-
+#flow accumulation
 def flow(arr):
     arr1= np.multiply(arr,0)
     for i in range(len(arr)):
@@ -108,12 +108,13 @@ def flow(arr):
     return arr1
 
 
-
+#Find the pour point from flow accumulation
 def PourPoint(flow):
     i= np.argmax(flow)
     pt = np.max(flow)
     return pt
 
+#find the streamline
 def stream(flow, pt):
     threshold = eval(input("Key in the threshold value:"))
     if threshold > pt:
