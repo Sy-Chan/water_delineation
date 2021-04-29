@@ -9,4 +9,4 @@ For me, I install via pip, using:
 
 Regarding to how to install numpy can refer to this youtube video: https://youtu.be/YWn8Wj69Dm4
 
-Some fatal issue is that you don't have the pip in your computer, in this case, check your installation and made sure you check the add Python 3.x to PATH (https://datatofish.com/add-python-to-windows-path/)
+Some fatal issue is that you don't have the pip in your computer, in this case, check your installation and made sure you checked the add Python 3.x to PATH (https://datatofish.com/add-python-to-windows-path/)
